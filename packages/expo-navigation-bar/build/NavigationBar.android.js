@@ -56,10 +56,6 @@ export async function setVisibilityAsync(visibility) {
     await ExpoNavigationBar.setVisibilityAsync(visibility);
 }
 export async function getVisibilityAsync() {
-    if (SystemBars != null) {
-        console.warn('`getVisibilityAsync` is not supported with edge-to-edge enabled.');
-        return 'hidden';
-    }
     return ExpoNavigationBar.getVisibilityAsync();
 }
 export async function setButtonStyleAsync(style) {

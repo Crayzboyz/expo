@@ -17,7 +17,7 @@ export function addVisibilityListener(listener) {
 /**
  * Changes the navigation bar's background color.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -31,7 +31,7 @@ export async function setBackgroundColorAsync(color) {
 /**
  * Gets the navigation bar's background color.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -47,7 +47,7 @@ export async function getBackgroundColorAsync() {
 /**
  * Changes the navigation bar's border color.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -61,7 +61,7 @@ export async function setBorderColorAsync(color) {
 /**
  * Gets the navigation bar's top border color, also known as the "divider color".
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -103,8 +103,6 @@ export async function getVisibilityAsync() {
 /**
  * Changes the navigation bar's button colors between white (`light`) and a dark gray color (`dark`).
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
- *
  * @example
  * ```ts
  * NavigationBar.setButtonStyleAsync("light");
@@ -117,7 +115,7 @@ export async function setButtonStyleAsync(style) {
 /**
  * Gets the navigation bar's button color styles.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -136,7 +134,7 @@ export async function getButtonStyleAsync() {
  *
  * When drawing behind the status and navigation bars, ensure the safe area insets are adjusted accordingly.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -157,7 +155,7 @@ export async function setPositionAsync(position) {
  * This method is unstable because the position can be set via another native module and get out of sync.
  * Alternatively, you can get the position by measuring the insets returned by `react-native-safe-area-context`.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -179,7 +177,7 @@ export async function unstable_getPositionAsync() {
  * - `'inset-swipe'`: Reveals the System UI after a swipe gesture (bottom or top) and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  * - `'inset-touch'`: Reveals the System UI after a touch anywhere on the screen and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts
@@ -193,7 +191,7 @@ export async function setBehaviorAsync(behavior) {
 /**
  * Gets the behavior of the status and navigation bars when the user swipes or touches the screen.
  *
- * > This method is supported only when edge-to-edge is disabled. Using it in edge-to-edge app may lead to unexpected behavior.
+ * > This method is supported only when edge-to-edge is disabled.
  *
  * @example
  * ```ts

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix inconsistencies with the docs. ([#36966](https://github.com/expo/expo/pull/36966) by [@behenate](https://github.com/behenate))
+
 ## 4.2.4 — 2025-05-01
 
 _This version does not introduce any user-facing changes._
