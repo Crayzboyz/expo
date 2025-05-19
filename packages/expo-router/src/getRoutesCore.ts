@@ -122,8 +122,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
   if (options.preserveRedirectAndRewrites) {
     if (options.redirects) {
       for (const redirect of options.redirects) {
-        // Remove the leading `./` or `/`
-        const source = redirect.source.replace(/^\.?\//, '');
+        const source = removeFileSystemDots(
+          removeSupportedExtensions(redirect.source.replace(/^\.?\//, ''))
+        );
 
         const isExternalRedirect = shouldLinkExternally(redirect.destination);
 
@@ -135,9 +136,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
               )
             );
 
-        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
-
-        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+        if (ignoreList.some((regex) => regex.test(source))) {
           continue;
         }
 
@@ -167,9 +166,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           continue;
         }
 
-        const fakeContextKey = removeFileSystemDots(removeSupportedExtensions(source));
-        contextKeys.push(fakeContextKey);
-        redirects[fakeContextKey] = {
+        redirects[source] = {
           source,
           destination,
           permanent: Boolean(redirect.permanent),
@@ -181,15 +178,15 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
     if (options.rewrites) {
       for (const rewrite of options.rewrites) {
-        // Remove the leading `./` or `/`
-        const source = rewrite.source.replace(/^\.?\//, '');
+        const source = removeFileSystemDots(
+          removeSupportedExtensions(rewrite.source.replace(/^\.?\//, ''))
+        );
+
         const targetDestination = stripInvisibleSegmentsFromPath(
           removeFileSystemDots(removeSupportedExtensions(rewrite.destination))
         );
 
-        const normalizedSource = removeFileSystemDots(removeSupportedExtensions(source));
-
-        if (ignoreList.some((regex) => regex.test(normalizedSource))) {
+        if (ignoreList.some((regex) => regex.test(source))) {
           continue;
         }
 
@@ -220,12 +217,15 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         }
 
         // Add a fake context key
-        const fakeContextKey = `./${source}.tsx`;
-        contextKeys.push(fakeContextKey);
-        rewrites[fakeContextKey] = { source, destination, methods: rewrite.methods };
+        contextKeys.push(source);
+        rewrites[source] = { source, destination, methods: rewrite.methods };
       }
     }
   }
+
+  // Its possible for redirects and rewrites to be in the contextKeys twice
+  // if they are both in app.json and the file system
+  const processedRedirectsAndRewrites = new Set<string>();
 
   for (const filePath of contextKeys) {
     if (ignoreList.some((regex) => regex.test(filePath))) {
@@ -235,6 +235,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     isValid = true;
 
     const meta = getFileMeta(filePath, options, redirects, rewrites);
+
+    // This can be included twice. We should skip the duplicate
+    if (processedRedirectsAndRewrites.has(meta.route)) {
+      continue;
+    }
 
     // This is a file that should be ignored. e.g maybe it has an invalid platform?
     if (meta.specificity < 0) {
@@ -292,8 +297,9 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     };
 
     if (meta.isRedirect) {
-      node.destinationContextKey = redirects[filePath].destination;
-      node.permanent = redirects[filePath].permanent;
+      const redirect = redirects[meta.route];
+      node.destinationContextKey = redirect.destination;
+      node.permanent = redirect.permanent;
       node.generated = true;
       if (node.type === 'route') {
         node = options.getSystemRoute(
@@ -304,14 +310,17 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           node
         );
       }
-      if (redirects[filePath].methods) {
-        node.methods = redirects[filePath].methods;
+      if (redirect.methods) {
+        node.methods = redirect.methods;
       }
       node.type = 'redirect';
+
+      processedRedirectsAndRewrites.add(meta.route);
     }
 
     if (meta.isRewrite) {
-      node.destinationContextKey = rewrites[filePath].destination;
+      const rewrite = rewrites[meta.route];
+      node.destinationContextKey = rewrite.destination;
       node.generated = true;
       if (node.type === 'route') {
         node = options.getSystemRoute(
@@ -322,10 +331,12 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           node
         );
       }
-      if (redirects[filePath].methods) {
-        node.methods = redirects[filePath].methods;
+      if (rewrite.methods) {
+        node.methods = rewrite.methods;
       }
       node.type = 'rewrite';
+
+      processedRedirectsAndRewrites.add(meta.route);
     }
 
     if (process.env.NODE_ENV === 'development') {

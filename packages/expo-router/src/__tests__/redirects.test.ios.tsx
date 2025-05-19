@@ -5,6 +5,7 @@ import { RedirectConfig, router } from '../exports';
 import { store } from '../global-state/router-store';
 import { Tabs } from '../layouts/Tabs';
 import { screen, act, renderRouter } from '../testing-library';
+import Stack from '../layouts/Stack';
 
 const mockRedirects = jest.fn(() => [] as RedirectConfig[]);
 const mockOpenURL = jest.fn((url: string) => undefined);
@@ -300,6 +301,27 @@ it('redirect to external URL', async () => {
   });
 
   act(() => router.push('/foo'));
+
+  expect(mockOpenURL).toHaveBeenCalledWith('https://example.com');
+});
+
+it.only('redirects will override existing routes', () => {
+  mockRedirects.mockReturnValue([
+    {
+      source: '(tabs)/explore',
+      destination: '//example.com',
+    },
+  ]);
+
+  renderRouter({
+    _layout: () => <Stack />,
+    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/explore': () => <Text testID="explore">Explore</Text>,
+    index: () => null,
+    bar: () => <Text testID="bar" />,
+  });
+
+  act(() => router.push('/explore'));
 
   expect(mockOpenURL).toHaveBeenCalledWith('https://example.com');
 });
