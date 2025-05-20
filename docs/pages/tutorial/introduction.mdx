@@ -1,75 +1,105 @@
----
-title: 'Tutorial: Using React Native and Expo'
-sidebar_title: Introduction
-description: An introduction to a React Native tutorial on how to build a universal app that runs on Android, iOS and the web using Expo.
----
+// App.tsx
+import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+export default function App() {
+  const [step, setStep] = React.useState("welcome");
+  const [phone, setPhone] = React.useState("");
+  const [code, setCode] = React.useState("");
+  const [pin, setPin] = React.useState("");
+  const [profile, setProfile] = React.useState({ name: "", topicInterest: "" });
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+  if (step === "welcome") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen p-4">
+        <h1 className="text-3xl font-bold mb-6">MÜNAZARA</h1>
+        <Tabs defaultValue="giris" className="w-full max-w-sm">
+          <TabsList>
+            <TabsTrigger value="giris">Giriş Yap</TabsTrigger>
+            <TabsTrigger value="kayit">Kayıt Ol</TabsTrigger>
+          </TabsList>
+          <TabsContent value="giris">
+            <Input placeholder="PIN" type="password" className="mt-4" />
+            <Button className="mt-4 w-full" onClick={() => setStep("profile")}>Giriş Yap</Button>
+          </TabsContent>
+          <TabsContent value="kayit">
+            <Input placeholder="Telefon Numarası" value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-4" />
+            <Button className="mt-4 w-full" onClick={() => setStep("sms")}>SMS Gönder</Button>
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
+  }
 
-We're about to embark on a journey of building universal apps. In this tutorial, we'll create an Expo app that runs on Android, iOS, and web; all with a single codebase. Let's get started!
+  if (step === "sms") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen p-4">
+        <h2 className="text-xl font-semibold mb-4">SMS Doğrulama</h2>
+        <p className="text-sm mb-2">Telefon numarasına gelen kodu gir:</p>
+        <Input placeholder="1234" value={code} onChange={(e) => setCode(e.target.value)} />
+        <Button className="mt-4 w-full" onClick={() => setStep("pin")}>Doğrula</Button>
+      </div>
+    );
+  }
 
-## About React Native and Expo tutorial
+  if (step === "pin") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen p-4">
+        <h2 className="text-xl font-semibold mb-4">PIN Belirle</h2>
+        <Input placeholder="PIN (4 haneli)" value={pin} onChange={(e) => setPin(e.target.value)} />
+        <Button className="mt-4 w-full" onClick={() => setStep("profile")}>Devam</Button>
+      </div>
+    );
+  }
 
-The objective of this tutorial is to get started with Expo and become familiar with the Expo SDK. It'll cover the following topics:
+  if (step === "profile") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen p-4">
+        <h2 className="text-xl font-semibold mb-4">Profilini Oluştur</h2>
+        <Input placeholder="Adınız" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} />
+        <Input placeholder="İlgi Duyduğun Konular" className="mt-2" value={profile.topicInterest} onChange={(e) => setProfile({ ...profile, topicInterest: e.target.value })} />
+        <Button className="mt-4 w-full" onClick={() => setStep("home")}>Profil Tamamla</Button>
+      </div>
+    );
+  }
 
-- Create an app using the default template with TypeScript enabled
-- Implement a two-screen bottom tabs layout with Expo Router
-- Break down the app layout and implement it with flexbox
-- Use each platform's system UI to select an image from the media library
-- Create a sticker modal using the `<Modal>` and `<FlatList>` components from React Native
-- Add touch gestures to interact with a sticker
-- Use third-party libraries to capture a screenshot and save it to the disk
-- Handle platform differences between Android, iOS, and web
-- Finally, go through the process of configuring a status bar, a splash screen, and an icon to complete the app
+  if (step === "home") {
+    return (
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Hoşgeldin, {profile.name}</h1>
+        <Card>
+          <CardContent className="p-4">
+            <h2 className="font-semibold">Münazara Odaları</h2>
+            <p className="text-sm mt-2">Bir konuda merakını ifade et ve bir bilgi sahibiyle konuşmaya başla.</p>
+            <Button className="mt-4" onClick={() => setStep("room")}>Oda Oluştur</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-These topics provide a foundation to learn the fundamentals of building an Expo app. The tutorial is self-paced and can take up to two hours to complete.
+  if (step === "room") {
+    return (
+      <div className="p-4">
+        <h1 className="text-xl font-bold mb-4">Münazara Odası</h1>
+        <Card>
+          <CardContent className="p-4">
+            <div className="space-y-4">
+              <div className="text-left">
+                <span className="font-semibold">Sen:</span> Ben bu konuda şunu merak ediyorum...
+              </div>
+              <div className="text-right">
+                <span className="font-semibold">Bilgi Sahibi:</span> Harika bir soru. Şöyle açıklayayım...
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-To keep it beginner friendly, we divided the tutorial into nine chapters so that you can follow along or put it down and come back to it later. Each chapter contains the necessary code snippets to complete the steps, so you can follow along by creating an app from scratch or copy and paste it.
-
-Before we get started, take a look at what we'll build. It's an app named **StickerSmash** that runs on Android, iOS, and the web:
-
-<ContentSpotlight file="tutorial/final.mp4" />
-
-> **info** The complete source code for this tutorial is available on [GitHub](https://github.com/expo/examples/tree/master/stickersmash).
-
-## How to use this tutorial
-
-We believe in [learning by doing](https://en.wikipedia.org/wiki/Learning-by-doing), so this tutorial emphasizes doing over explaining. You can follow along the journey of building an app by creating the app from scratch.
-
-Throughout the tutorial, any important code or code that has changed between examples will be <span className="tutorial-code-annotation">highlighted in green</span>. You can hover over the highlights (on desktop) or tap them (on mobile) to learn more about the change. For example, the code highlighted in the snippet below explains what it does:
-
-{/* prettier-ignore */}
-```tsx Hello World|collapseHeight=300
-import { StyleSheet, Text, View } from 'react-native';
-
-export default function Index() {
-  return (
-    <View style={styles.container}>
-      /* @tutinfo This used to say: "Edit app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
-    </View>
-  );
+  return null;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-```
-
-## Next step
-
-We're ready to start building our app.
-
-<BoxLink
-  title="Start"
-  Icon={BookOpen02Icon}
-  description="Let's start by creating a new Expo app."
-  href="/tutorial/create-your-first-app"
-/>
